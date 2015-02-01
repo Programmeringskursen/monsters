@@ -117,14 +117,17 @@ class Game(object):
         i = 0
         for room in self.rooms:
             i += 1
-            if room == self.player.position:
-                sys.stdout.write('P\t')
-            j = 0
-            for j in range(monster_nr):
-                if room == self.monsters[j].position:
-                    sys.stdout.write('M%d\t'%(j))
-            else:
+            if len(room.who) == 0:
                 sys.stdout.write('X\t')
+            else:
+                for j in xrange(len(room.who)):
+                    if room.who[j] == self.player:
+                        sys.stdout.write('P')
+                    else:
+                        for k in xrange(monster_nr):
+                            if room.who[j] == self.monsters[k]:
+                                sys.stdout.write('M%d'%(k))
+                sys.stdout.write('\t')
             if i%board_edge_length==0:
                 sys.stdout.write('\n')
 
