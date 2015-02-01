@@ -33,13 +33,15 @@ class Player(Character):
         Character.__init__(self, position)
         self.life = int(life)
 
+# measures the player's remaining strength to that of the monste's in the same room
     def fight(self, monster):
-        if self.life < monster.strength and np.random.random()/0.5>1.:
+        if self.life < monster.strength and np.random.random()*2.>1.:
             self.life -= 1
             print "You are defeated by the monster in the room! life -1"
         else:
             monster.place(None)
 
+# shows where the player is located
     def navigate(self):
         print "You are in room %d!"%(self.position) #This is really NOT the room ID yet!
 
@@ -83,7 +85,9 @@ class Room(object):
                 player.fight(monster_to_fight)
 
 class Game(object):
-    def __init__(self, board_edge_length, monster_nr):
+    def __init__(self, board_edge_length=5, monster_nr=3):
+        self.board_edge_length = board_edge_length
+        self.monster_nr = monster_nr
         self.rooms = []
         for room in xrange(board_edge_length**2):
             self.rooms.append(Room(room))
@@ -112,28 +116,43 @@ class Game(object):
         monster_strengths = np.random.random_integers(0, MAX_MONSTER_STRENGTH, size=monster_nr)
         for monster in xrange(monster_nr):
             self.monsters.append(Monster(self.rooms[monster_positions[monster]], monster_strengths[monster]))
+        self.draw()
+        self.play()
+        self.draw()
+
+# play one step
+    def play(self):
+        self.direction = raw_input('In which direction do you want to move?\n')
+        nr_moves = int(raw_input('How many rooms in %s direction?\n'%(self.direction)))
+        for nr_move in xrange(nr_moves):
+            self.player.move(self.direction)
+
+#        for room in self.rooms:
+#            room.encounter()
 
 # draw the board
-        i = 0
-        for room in self.rooms:
-            i += 1
-            if len(room.who) == 0:
-                sys.stdout.write('X\t')
-            else:
-                for j in xrange(len(room.who)):
-                    if room.who[j] == self.player:
-                        sys.stdout.write('P')
-                    else:
-                        for k in xrange(monster_nr):
-                            if room.who[j] == self.monsters[k]:
-                                sys.stdout.write('M%d'%(k))
-                sys.stdout.write('\t')
-            if i%board_edge_length==0:
-                sys.stdout.write('\n')
-        sys.stdout.flush()
+    def draw(self):
+            i = 0
+            for room in self.rooms:
+                i += 1
+                if len(room.who) == 0:
+                    sys.stdout.write('X\t')
+                else:
+                    for j in xrange(len(room.who)):
+                        if room.who[j] == self.player:
+                            sys.stdout.write('P')
+                        else:
+                            for k in xrange(self.monster_nr):
+                                if room.who[j] == self.monsters[k]:
+                                    sys.stdout.write('M%d'%(k))
+                    sys.stdout.write('\t')
+                if i%self.board_edge_length==0:
+                    sys.stdout.write('\n')
+            sys.stdout.flush()
 
-
-g1 = Game(4, 2)
+#g1 = Game(board_edge_length=4, monster_nr=2)
+print '\n'
+g2 = Game()
 #                if room_i == 0:
 #                    room.neighbor(self.rooms[room_i+board_edge_length, room_j], "west")
 #                if room_i == board_edge_length-1:
