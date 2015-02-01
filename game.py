@@ -108,8 +108,8 @@ class Game(object):
         player_position = np.random.random_integers(board_edge_length)
         self.player = Player(self.rooms[player_position], FULL_LIFE)
         self.monsters = []
-        monster_positions = np.random.random_integers(board_edge_length**2, size=monster_nr)
-        monster_strengths = np.random.random_integers(MAX_MONSTER_STRENGTH, size=monster_nr)
+        monster_positions = np.random.random_integers(0, board_edge_length**2-1, size=monster_nr)
+        monster_strengths = np.random.random_integers(0, MAX_MONSTER_STRENGTH, size=monster_nr)
         for monster in xrange(monster_nr):
             self.monsters.append(Monster(self.rooms[monster_positions[monster]], monster_strengths[monster]))
 
@@ -130,8 +130,9 @@ class Game(object):
                 sys.stdout.write('\t')
             if i%board_edge_length==0:
                 sys.stdout.write('\n')
-
         sys.stdout.flush()
+
+
 g1 = Game(4, 2)
 #                if room_i == 0:
 #                    room.neighbor(self.rooms[room_i+board_edge_length, room_j], "west")
