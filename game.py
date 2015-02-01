@@ -2,6 +2,7 @@ import math
 import numpy as np
 FULL_LIFE = 10
 MAX_MONSTER_STRENGTH = 5
+import sys
 
 class Character(object):
     def __init__(self, position):
@@ -117,17 +118,17 @@ class Game(object):
         for room in self.rooms:
             i += 1
             if room == self.player.position:
-                print 'P\t'
+                sys.stdout.write('P\t')
             j = 0
             for j in range(monster_nr):
                 if room == self.monsters[j].position:
-                    print 'M%d\t'%(j)
+                    sys.stdout.write('M%d\t'%(j))
             else:
-                print 'X\t'
+                sys.stdout.write('X\t')
             if i%board_edge_length==0:
-                print '\n'
-            
+                sys.stdout.write('\n')
 
+        sys.stdout.flush()
 g1 = Game(4, 2)
 #                if room_i == 0:
 #                    room.neighbor(self.rooms[room_i+board_edge_length, room_j], "west")
