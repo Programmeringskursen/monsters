@@ -4,6 +4,18 @@ FULL_LIFE = 10
 MAX_MONSTER_STRENGTH = 5
 import sys
 
+class DirectionException(Exception):
+    pass
+
+try:
+    raise DirectionException("You can only go east, west, north, or south!")
+except DirectionException, e:
+    print e
+
+    def direction_exception(direction):
+        if direction != 'east' and direction != 'east' and direction != 'east' and direction != 'east':
+            raise DirectionException("You can only go east, west, north, or south!")
+
 class Character(object):
     def __init__(self, position):
         self.position = None
@@ -122,10 +134,14 @@ class Game(object):
 
 # play one step
     def play(self):
-        self.direction = raw_input('In which direction do you want to move?\n')
-        nr_moves = int(raw_input('How many rooms in %s direction?\n'%(self.direction)))
-        for nr_move in xrange(nr_moves):
-            self.player.move(self.direction)
+        input_command = raw_input('How do you want to explore the world?\n')
+        usr_commands = input_command.split()
+        for cmnd in usr_commands:
+
+            try: 
+                self.direction = cmnd
+                self.player.move(self.direction)
+            except DirectionException
 
 #        for room in self.rooms:
 #            room.encounter()
@@ -150,19 +166,5 @@ class Game(object):
                     sys.stdout.write('\n')
             sys.stdout.flush()
 
-#g1 = Game(board_edge_length=4, monster_nr=2)
 print '\n'
 g2 = Game()
-#                if room_i == 0:
-#                    room.neighbor(self.rooms[room_i+board_edge_length, room_j], "west")
-#                if room_i == board_edge_length-1:
-#                    room.neighbor(self.rooms[0, room_j], "east")
-#                if room_j == 0:
-#                    room.neighbor(self.rooms[room_i, room_j+board_edge_length], "south")
-#                if room_j == board_edge_length-1:
-#                    room.neighbor(self.rooms[room_i, 0], "north")
-#                else: 
-#                    room.neighbor(self.rooms[room_index(room_i, room_j+1)], "north")
-#                    room.neighbor(self.rooms[room_i, room_j-1], "south")
-#                    room.neighbor(self.rooms[room_i-1, room_j], "west")
-#                    room.neighbor(self.rooms[room_i+1, room_j], "east")
