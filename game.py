@@ -132,15 +132,17 @@ class Game(object):
 
 # play one step
     def play(self):
-        input_command = raw_input('How do you want to explore the world?\n')
-        usr_commands = input_command.split()
-# I need to make a while here so that it keeps asking the user for a command untill the user gets it right with directions (and possibly other keywords)
-        for cmnd in usr_commands:
-            try:
-                self.direction = cmnd
-                self.player.move(self.direction)
-            except DirectionException, e:
-                input_command = raw_input('Now tell me how you really want to explore the world\n')
+        cmnd_validity = False
+        while cmnd_validity == False:
+            input_command = raw_input('How do you want to explore the world?\n')
+            usr_commands = input_command.split()
+            for cmnd in usr_commands:
+                try:
+                    self.direction = cmnd
+                    self.player.move(self.direction)
+                    cmnd_validity = True
+                except DirectionException, e:
+                    cmnd_validity = False
 
 
 #        for room in self.rooms:
