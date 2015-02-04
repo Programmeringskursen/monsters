@@ -5,16 +5,9 @@ MAX_MONSTER_STRENGTH = 5
 import sys
 
 class DirectionException(Exception):
+    def __init__(self):
+        Exception.__init__(self, "Invalid direction keyword; Try with east, west, north or south")
     pass
-
-try:
-    raise DirectionException("You can only go east, west, north, or south!")
-except DirectionException, e:
-    print e
-
-    def direction_exception(direction):
-        if direction != 'east' and direction != 'east' and direction != 'east' and direction != 'east':
-            raise DirectionException("You can only go east, west, north, or south!")
 
 class Character(object):
     def __init__(self, position):
@@ -39,6 +32,9 @@ class Character(object):
             self.place(self.position.west)
         elif direction == "east":
             self.place(self.position.east)
+        else:
+            raise DirectionException()
+
 
 class Player(Character):
     def __init__(self, position, life):
@@ -79,12 +75,14 @@ class Room(object):
         elif direction == "south":
             self.south = other
             other.north = self
-        if direction == "west":
+        elif direction == "west":
             self.west = other
             other.east = self
-        if direction == "east":
+        elif direction == "east":
             self.east = other
             other.west = self
+        else:
+            raise DirectionException()
 
     def __repr__(self):
         return 'Room ID: %d'%(self.ID)
@@ -136,12 +134,14 @@ class Game(object):
     def play(self):
         input_command = raw_input('How do you want to explore the world?\n')
         usr_commands = input_command.split()
+# I need to make a while here so that it keeps asking the user for a command untill the user gets it right with directions (and possibly other keywords)
         for cmnd in usr_commands:
-
-            try: 
+            try:
                 self.direction = cmnd
                 self.player.move(self.direction)
-            except DirectionException
+            except DirectionException, e:
+                input_command = raw_input('Now tell me how you really want to explore the world\n')
+
 
 #        for room in self.rooms:
 #            room.encounter()
