@@ -3,95 +3,12 @@ import numpy as np
 FULL_LIFE = 10
 MAX_MONSTER_STRENGTH = 5
 import sys
+import exceptions
 
-class DirectionException(Exception):
-    def __init__(self):
-        Exception.__init__(self, "Invalid direction keyword; Try with east, west, north or south")
-
-class Character(object):
-    def __init__(self, position):
-        self.position = None
-        self.place(position)
-
-# puts the character *self* in the given *position*
-    def place(self, position):
-        if self.position != None:
-            self.position.who.remove(self)
-        self.position = position
-        if position != None:
-            position.who.append(self)
-
-# moves the character *self* to its given *direction*
-    def move(self, direction):
-        if direction == "north":
-            self.place(self.position.north)
-        elif direction == "south":
-            self.place(self.position.south)
-        elif direction == "west":
-            self.place(self.position.west)
-        elif direction == "east":
-            self.place(self.position.east)
-        else:
-            raise DirectionException()
-
-
-class Player(Character):
-    def __init__(self, position, life):
-        Character.__init__(self, position)
-        self.life = int(life)
-
-# measures the player's remaining strength to that of the monste's in the same room
-    def fight(self, monster):
-        if self.life < monster.strength and np.random.random()*2.>1.:
-            self.life -= 1
-            print "You are defeated by the monster in the room! life -1"
-        else:
-            monster.place(None)
-
-# shows where the player is located
-    def navigate(self):
-        print "You are in room %d!"%(self.position) #This is really NOT the room ID yet!
-
-class Monster(Character):
-    def __init__(self, position, strength):
-        Character.__init__(self, position)
-        self.strength = int(strength)
-
-class Room(object):
-    def __init__(self, ID):
-        self.ID = ID
-        self.north = None
-        self.south = None
-        self.west = None
-        self.east = None
-        self.who = []
-
-# set two rooms *self*, and *other* as neighbors
-    def neighbor(self, other, direction):
-        if direction == "north":
-            self.north = other
-            other.south = self
-        elif direction == "south":
-            self.south = other
-            other.north = self
-        elif direction == "west":
-            self.west = other
-            other.east = self
-        elif direction == "east":
-            self.east = other
-            other.west = self
-        else:
-            raise DirectionException()
-
-    def __repr__(self):
-        return 'Room ID: %d'%(self.ID)
-
-    def encounter(self):
-        players_in_room = [char_in_room for char_in_room in self.who if isinstance(char_in_room, Player)]
-        if players_in_room:
-            monsters_in_room = [char_in_room for char_in_room in self.who if isinstance(char_in_room, Monster)]
-            for monster_to_fight in monsters_in_room:
-                player.fight(monster_to_fight)
+import characters
+import player
+import monsters
+import rooms
 
 class Game(object):
     def __init__(self, board_edge_length=5, monster_nr=3):
@@ -99,7 +16,7 @@ class Game(object):
         self.monster_nr = monster_nr
         self.rooms = []
         for room in xrange(board_edge_length**2):
-            self.rooms.append(Room(room))
+            self.rooms.append(rooms.Room(room))
         def room_index(i, j):
             return j*board_edge_length+i
         for room_i in xrange(board_edge_length):
@@ -119,12 +36,12 @@ class Game(object):
                     room.neighbor(self.rooms[room_index(room_i-1, room_j)], "west")
                     room.neighbor(self.rooms[room_index(room_i+1, room_j)], "east")
         player_position = np.random.random_integers(board_edge_length)
-        self.player = Player(self.rooms[player_position], FULL_LIFE)
+        self.player = player.Player(self.rooms[player_position], FULL_LIFE)
         self.monsters = []
         monster_positions = np.random.random_integers(0, board_edge_length**2-1, size=monster_nr)
         monster_strengths = np.random.random_integers(0, MAX_MONSTER_STRENGTH, size=monster_nr)
         for monster in xrange(monster_nr):
-            self.monsters.append(Monster(self.rooms[monster_positions[monster]], monster_strengths[monster]))
+            self.monsters.append(monsters.Monster(self.rooms[monster_positions[monster]], monster_strengths[monster]))
         self.draw()
         self.play()
         self.draw()
@@ -140,12 +57,8 @@ class Game(object):
                     self.direction = cmnd
                     self.player.move(self.direction)
                     cmnd_validity = True
-                except DirectionException, e:
+                except exceptions.DirectionException, e:
                     cmnd_validity = False
-
-
-#        for room in self.rooms:
-#            room.encounter()
 
 # draw the board
     def draw(self):
