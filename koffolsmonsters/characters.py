@@ -18,9 +18,9 @@ class Character(object):
 
 # moves the character *self* to its given *direction*
     def move(self, direction):
-        if direction == "north":
+        if direction == "south":
             self.place(self.position.north)
-        elif direction == "south":
+        elif direction == "north":
             self.place(self.position.south)
         elif direction == "west":
             self.place(self.position.west)

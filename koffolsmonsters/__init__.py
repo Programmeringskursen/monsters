@@ -1,6 +1,6 @@
 import math
 import numpy as np
-FULL_LIFE = 10
+FULL_LIFE = 2
 MAX_MONSTER_STRENGTH = 5
 import sys
 import koffolsmonsters.exceptions
@@ -15,7 +15,7 @@ class Game(object):
         self.monster_nr = monster_nr
         self.rooms = []
         for room in xrange(board_edge_length**2):
-            self.rooms.append(rooms.Room(room))
+            self.rooms.append(rooms.Room(room, self))
         def room_index(i, j):
             return j*board_edge_length+i
         for room_i in xrange(board_edge_length):
@@ -26,12 +26,12 @@ class Game(object):
                 if room_i == board_edge_length-1:
                     room.neighbor(self.rooms[room_index(0, room_j)], "east")
                 if room_j == 0:
-                    room.neighbor(self.rooms[room_index(room_i, board_edge_length-1)], "south")
+                    room.neighbor(self.rooms[room_index(room_i, board_edge_length-1)], "north")
                 if room_j == board_edge_length-1:
-                    room.neighbor(self.rooms[room_index(room_i, 0)], "north")
+                    room.neighbor(self.rooms[room_index(room_i, 0)], "south")
                 else: 
-                    room.neighbor(self.rooms[room_index(room_i, room_j+1)], "north")
-                    room.neighbor(self.rooms[room_index(room_i, room_j-1)], "south")
+                    room.neighbor(self.rooms[room_index(room_i, room_j+1)], "south")
+                    room.neighbor(self.rooms[room_index(room_i, room_j-1)], "north")
                     room.neighbor(self.rooms[room_index(room_i-1, room_j)], "west")
                     room.neighbor(self.rooms[room_index(room_i+1, room_j)], "east")
         player_position = np.random.random_integers(board_edge_length)
@@ -40,10 +40,20 @@ class Game(object):
         monster_positions = np.random.random_integers(0, board_edge_length**2-1, size=monster_nr)
         monster_strengths = np.random.random_integers(0, MAX_MONSTER_STRENGTH, size=monster_nr)
         for monster in xrange(monster_nr):
-            self.monsters.append(monsters.Monster(self.rooms[monster_positions[monster]], monster_strengths[monster]))
-        self.draw()
-        self.play()
-        self.draw()
+            self.monsters.append(monsters.Monster(self.rooms[monster_positions[monster]], monster_strengths[monster], '%s'%(monster,)))
+            self.check_encounters()
+        while self.player.life and self.monsters:
+            self.draw()
+            self.play()
+            self.check_encounters()
+        else:
+            print "This fight is not over!!"
+
+# Encountering
+    def check_encounters(self):
+        for room in self.rooms:
+            room.encounter()
+
 
 # play one step
     def play(self):
@@ -67,13 +77,8 @@ class Game(object):
                 if len(room.who) == 0:
                     sys.stdout.write('X\t')
                 else:
-                    for j in xrange(len(room.who)):
-                        if room.who[j] == self.player:
-                            sys.stdout.write('P')
-                        else:
-                            for k in xrange(self.monster_nr):
-                                if room.who[j] == self.monsters[k]:
-                                    sys.stdout.write('M%d'%(k))
+                    for character in room.who:
+                        sys.stdout.write(repr(character))
                     sys.stdout.write('\t')
                 if i%self.board_edge_length==0:
                     sys.stdout.write('\n')
