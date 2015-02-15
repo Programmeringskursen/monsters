@@ -4,6 +4,7 @@ import sys
 import koffolsmonsters.exceptions
 import koffolsmonsters.player as player
 import koffolsmonsters.monsters as monsters
+import koffolsmonsters.things as things
 
 class Room(object):
     def __init__(self, ID, game):
@@ -12,7 +13,7 @@ class Room(object):
         self.south = None
         self.west = None
         self.east = None
-        self.who = []
+        self.content = []
         self.game = game
 
 # set two rooms *self*, and *other* as neighbors
@@ -36,10 +37,9 @@ class Room(object):
         return 'Room ID: %d'%(self.ID)
 
     def encounter(self):
-#        print "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-        players_in_room = [char_in_room for char_in_room in self.who if isinstance(char_in_room, player.Player)]
+        players_in_room = [char_in_room for char_in_room in self.content if isinstance(char_in_room, player.Player)]
         if players_in_room:
-            monsters_in_room = [char_in_room for char_in_room in self.who if isinstance(char_in_room, monsters.Monster)]
+            monsters_in_room = [char_in_room for char_in_room in self.content if isinstance(char_in_room, monsters.Monster)]
             for monster_to_fight in monsters_in_room:
                 players_in_room[0].fight(monster_to_fight)
 

@@ -12,4 +12,3 @@ class Monster(characters.Character):
     def __repr__(self):
         return self.name
 
-

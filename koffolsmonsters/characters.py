@@ -7,14 +7,15 @@ class Character(object):
     def __init__(self, position):
         self.position = None
         self.place(position)
+        self.content = []
 
 # puts the character *self* in the given *position*
     def place(self, position):
         if self.position != None:
-            self.position.who.remove(self)
+            self.position.content.remove(self)
         self.position = position
         if position != None:
-            position.who.append(self)
+            position.content.append(self)
 
 # moves the character *self* to its given *direction*
     def move(self, direction):

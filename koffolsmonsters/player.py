@@ -28,4 +28,4 @@ class Player(characters.Character):
         print "You are in room %d!"%(self.position) #This is really NOT the room ID yet!
 
     def __repr__(self):
-        return "P"
+        return "*"
