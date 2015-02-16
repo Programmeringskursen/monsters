@@ -55,8 +55,9 @@ class Game(object):
             self.check_encounters()
         while self.player.life and self.monsters:
             self.draw()
-            self.play()
+            self.move()
             self.check_encounters()
+            self.pickup_items()
         else:
             print "This fight is not over!!"
 
@@ -65,11 +66,29 @@ class Game(object):
         for room in self.rooms:
             room.encounter()
 
-
-# play one step
-    def play(self):
+# Pick up things if available
+    def pickup_items(self):
+        things_in_room = [item_in_room for item_in_room in self.player.position.content if isinstance(item_in_room, things.Thing)]
+        while things_in_room:
+            cmnd_validity = False
+            while not cmnd_validity:
+                input_command = raw_input('What do you want to pick? Here is the list:\n%s'%(things_in_room))
+                usr_commands = input_command.split()
+                for cmnd in usr_commands:
+                    try:
+                        thing_to_pickup = cmnd
+                        self.player.pickup(thing_to_pickup)
+                        print things_in_room
+                        print thing_to_pickup
+                        things_in_room.remove(thing_to_pickup)
+                        cmnd_validity = True
+                    except koffolsmonsters.exceptions.ThingNameException, e:
+                        cmnd_validity = False
+                            
+# move one step
+    def move(self):
         cmnd_validity = False
-        while cmnd_validity == False:
+        while not cmnd_validity:
             input_command = raw_input('How do you want to explore the world?\n')
             usr_commands = input_command.split()
             for cmnd in usr_commands:
@@ -86,7 +105,7 @@ class Game(object):
             for room in self.rooms:
                 i += 1
                 if not room.content:
-                    sys.stdout.write('_\t')
+                    sys.stdout.write('O\t')
                 else:
                     item_repr = '/'.join([repr(item)[0] for item in room.content])
                     sys.stdout.write(item_repr)

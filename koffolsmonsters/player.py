@@ -2,11 +2,15 @@ import math
 import numpy as np
 import sys
 import koffolsmonsters.characters as characters
+import koffolsmonsters.exceptions
 
 class Player(characters.Character):
     def __init__(self, position, life):
         characters.Character.__init__(self, position)
         self.life = int(life)
+
+    def __repr__(self):
+        return "*"
 
 # measures the player's remaining strength to that of the monste's in the same room
     def fight(self, monster):
@@ -27,5 +31,14 @@ class Player(characters.Character):
     def navigate(self):
         print "You are in room %d!"%(self.position) #This is really NOT the room ID yet!
 
-    def __repr__(self):
-        return "*"
+    def pickup(self, thing):
+        print "Pick up %s!"%(thing)
+#        for item in self.position.content:
+#            if repr(item)!=thing: continue  
+#            item.place(self.position)
+        matching_thing = [item for item in self.position.content if repr(item)==thing]
+        if matching_thing:
+            matching_thing[0].place(self.position)
+            print "%s is now in your backpack!"%(thing)
+        elif not thing in [repr(item) for item in self.position.game.things_in_game]:
+            raise koffolsmonsters.exceptions.ThingNameException()

@@ -16,6 +16,9 @@ class Room(object):
         self.content = []
         self.game = game
 
+    def __repr__(self):
+        return 'Room ID: %d'%(self.ID)
+
 # set two rooms *self*, and *other* as neighbors
     def neighbor(self, other, direction):
         if direction == "south":
@@ -32,9 +35,6 @@ class Room(object):
             other.west = self
         else:
             raise koffolsmonsters.exceptions.DirectionException()
-
-    def __repr__(self):
-        return 'Room ID: %d'%(self.ID)
 
     def encounter(self):
         players_in_room = [char_in_room for char_in_room in self.content if isinstance(char_in_room, player.Player)]
